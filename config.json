@@ -1,0 +1,8 @@
+{
+  "development": {
+    "username": "root",
+    "password": "Database#123",
+    "database": "bitespeed_db",
+    "dialect": "mysql"
+  }
+}
