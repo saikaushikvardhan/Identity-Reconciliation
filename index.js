@@ -76,8 +76,8 @@ async function findOrCreatePrimaryContact(email, phoneNumber) {
   }
 
   // Combine both arrays and find the primary contact
-  const allContacts = [...contactsWithSameEmail, ...contactsWithSamePhone];
-  const uniquePrimaryContacts = new Set();
+  let allContacts = [...contactsWithSameEmail, ...contactsWithSamePhone];
+  let uniquePrimaryContacts = new Set();
 
   // Find all the related primary contacts for the given contacts 
   for (const contact of allContacts) {
@@ -92,8 +92,8 @@ async function findOrCreatePrimaryContact(email, phoneNumber) {
     }
   }
 
-  if (uniquePrimaryContacts.size == 1) {
-    primaryContact = uniquePrimaryContacts[0];
+  if (uniquePrimaryContacts.size === 1) {
+    primaryContact = Array.from(uniquePrimaryContacts)[0];
   } else if (uniquePrimaryContacts.size > 1) {
     // More than one primary contact in the given array.
     const sortedPrimaryContacts = Array.from(uniquePrimaryContacts).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -121,6 +121,7 @@ sequelize.sync().then(() => {
           let primaryContact = await findOrCreatePrimaryContact(email, phoneNumber);
 
           if (!primaryContact) {
+            console.log("Found no primary key");
             throw "Invalid request";
           }
 
@@ -143,8 +144,9 @@ sequelize.sync().then(() => {
             if (contact.email) emails.add(contact.email);
           }
 
-          if (!emails.has(email) || !phoneNumbers.has(phoneNumber)) {
-            let newSecondaryContact = await Contact.create({
+          // Fix the duplicate creation of the contacts.
+          if ((email && !emails.has(email)) || (phoneNumber && !phoneNumbers.has(phoneNumber))) {
+            await Contact.create({
               email,
               phoneNumber,
               linkedId: primaryContact.id,
