@@ -1,8 +1,6 @@
-// To Do
-// 1. Fix duplicate phone numbers and emails in the response.
-// 2. Address the edge case of not finding a primary contact.
-// 3. Address the edge case of adding to the missing fields instead of creating new contacts.
-// 4. Fix proper demotion of the primary contacts to secondary contacts.
+// Bug Report
+// 1. Contact with latest timestamp is marked as primary.
+// 2. Duplicate secondary contacts are being created.
 
 const http = require('http');
 const { Sequelize, Op } = require('sequelize');
@@ -144,7 +142,6 @@ sequelize.sync().then(() => {
             if (contact.email) emails.add(contact.email);
           }
 
-          // Fix the duplicate creation of the contacts.
           if ((email && !emails.has(email)) || (phoneNumber && !phoneNumbers.has(phoneNumber))) {
             await Contact.create({
               email,
