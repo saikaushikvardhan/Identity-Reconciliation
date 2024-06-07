@@ -1,7 +1,3 @@
-// Bug Report
-// 1. Contact with latest timestamp is marked as primary.
-// 2. Duplicate secondary contacts are being created.
-
 const http = require('http');
 const { Sequelize, Op } = require('sequelize');
 const { sequelize, Contact } = require('./models/contact');
@@ -22,6 +18,7 @@ function validateRequest(body) {
   return { email, phoneNumber };
 }
 
+// Convert the secondary contacts to primary.
 async function demotePrimaryContactsToSecondary(sortedUniquePrimaryContacts) {
   const mainPrimaryContact = sortedUniquePrimaryContacts[0];
 
@@ -94,7 +91,7 @@ async function findOrCreatePrimaryContact(email, phoneNumber) {
     primaryContact = Array.from(uniquePrimaryContacts)[0];
   } else if (uniquePrimaryContacts.size > 1) {
     // More than one primary contact in the given array.
-    const sortedPrimaryContacts = Array.from(uniquePrimaryContacts).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const sortedPrimaryContacts = Array.from(uniquePrimaryContacts).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     await demotePrimaryContactsToSecondary(sortedPrimaryContacts);
     primaryContact = sortedPrimaryContacts[0];
   }
