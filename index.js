@@ -140,7 +140,7 @@ sequelize.sync().then(() => {
           }
 
           if ((email && !emails.has(email)) || (phoneNumber && !phoneNumbers.has(phoneNumber))) {
-            await Contact.create({
+            let newSecondaryContact = await Contact.create({
               email,
               phoneNumber,
               linkedId: primaryContact.id,
@@ -148,6 +148,7 @@ sequelize.sync().then(() => {
             })
             emails.add(email);
             phoneNumbers.add(phoneNumber);
+            secondaryContacts.push(newSecondaryContact);
           }
 
           const response = {
