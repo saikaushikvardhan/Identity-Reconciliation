@@ -1,7 +1,6 @@
 const http = require('http');
 const { Sequelize, Op } = require('sequelize');
 const { sequelize, Contact } = require('./models/contact');
-const config = require('./config.json').development;
 
 // Function to validate the request
 function validateRequest(body) {

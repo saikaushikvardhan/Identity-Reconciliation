@@ -1,10 +1,16 @@
 // models/contact.js
 const { Sequelize, DataTypes } = require('sequelize');
-const config = require('../config.json').development;
+require('dotenv').config();
 
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-  host: config.host,
-  dialect: config.dialect,
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  protocol: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // For self-signed certificates
+    },
+  },
 });
 
 const Contact = sequelize.define('Contact', {
